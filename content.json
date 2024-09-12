@@ -1,0 +1,57 @@
+{
+    "header": {
+      "logo_src": "static/QRealtor Logo.png",
+      "nav_items": [
+        {"name": "Home", "link": "#"},
+        {"name": "Features", "link": "#"},
+        {"name": "Solutions", "link": "#"},
+        {"name": "Demo", "link": "#"},
+        {"name": "Testimonials", "link": "#"}
+      ],
+      "login_text": "Login",
+      "signup_text": "Sign-up"
+    },
+    "sections": [
+      {
+        "section_title": "WANT TO GENERATE A PROPERTY REPORT?",
+        "heading": "Revolutionizing Real Estate: Smarter Decisions, Seamless",
+        "subheading": "Unlock the full potential of your real estate business with AI-driven insights and tools.",
+        "button_text": "Join to Wait-List    "
+    },
+    {
+      "section_title": "WHAT ARE THE FEATURES?",
+      "heading": "Empower Every Transaction with Advanced AI."
+    },
+    {
+      "feature_title": "FEATURES 01",
+      "feature_name": "Automated CMAs",
+      "feature_description": "Create comprehensive market analyses in minutes, not hours.",
+      "feature_image_src": "static/Automated_cma-1920x1303.png"
+    },
+    {
+      "feature_title": "FEATURES 02",
+      "feature_name": "Lead Management",
+      "feature_description": "Identify and nurture leads with data-driven precision.",
+      "feature_image_src": "static/customers-1920x1303.png"
+    },
+    {
+      "feature_title": "FEATURES 03",
+      "feature_name": "Transaction Automation",
+      "feature_description": "Simplify complex transactions with automated workflows.",
+      "feature_image_src": "static/billing-1920x1303.png"
+    },
+    {
+      "feature_title": "FEATURES 04",
+      "feature_name": "Client Management",
+      "feature_description": "Enhance client relationships through personalized, AI-generated insights.",
+      "feature_image_src": "static/client-management_v1-1920x1303.png"
+    }
+  ],
+  "footer": {
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "back_to_top": "Back to top"
+  }
+}
+
+  
