@@ -1,7 +1,7 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from werkzeug.utils import secure_filename
-import requests  # For making HTTP requests
+import google.generativeai as genai  # Import the Gemini API SDK
 import json
 
 app = Flask(__name__)
@@ -13,38 +13,57 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Configure your Gemini API key
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
 
 # Function to check if the file is allowed
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Function to generate dynamic content using Gemini API
-def generate_dynamic_content(json,context):
-    prompt2 = f"str({json}) modify the content of the given json string according to the context {context},return response as purely json string" 
-    headers = {
-        'Authorization': f'Bearer {GEMINI_API_KEY}',
-        'Content-Type': 'application/json'
-    }
-    data = {
-        'prompt': prompt2,
-        'max_tokens': 1500
-    }
-    response = requests.post('https://api.gemini.com/v1/completions', headers=headers, json=data)
-    response_json = response.json()
-    return response_json['choices'][0]['text'].strip()
+def generate_dynamic_content(prompt):
+    try:
+        # Use the Gemini API to generate content
+        model = genai.GenerativeModel('gemini-1.5-flash',
+                              # Set the `response_mime_type` to output JSON
+                              generation_config={"response_mime_type": "application/json"})
+        response = model.generate_content(prompt)
 
+        # Check if the response contains the text attribute
+        if hasattr(response, 'text'):
+            return response.text.strip()
+        else:
+            return "Error: No content generated."
+
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+# Load the content from a JSON file
 def load_content():
     with open('content.json', 'r') as f:
         content = json.load(f)
     return content
 
-@app.route('/content')
-def home():
+
+
+@app.route('/content/<context>')
+def home(context):
     content = load_content()  # Load the content from JSON
-    newcontent = generate_dynamic_content(str(content),"Ecommerce")
-    return newcontent 
-    return render_template('template.html', content=content)
+    
+    # Dynamically set the context in the prompt based on the URL
+    prompt = f"Modify the content of the following JSON: {content}, in the context of {context}, response should be a pure JSON string, that can be directly parsed into a JSON object, avoid including any additional text content outside the JSON string"
+    
+    new_content = generate_dynamic_content(prompt)
+    
+    try:
+        # Convert the string response to a JSON object
+        new_content_json = json.loads(new_content)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Failed to parse generated content as JSON.", "response": new_content})
+
+    return render_template('template.html', content=new_content_json)
+
+  
+
 
 @app.route('/')
 def index():
