@@ -22,10 +22,7 @@
                 {% endfor %}
             </ul>
 
-            <div class="col-md-3 text-end">
-                <button type="button" class="btn btn-outline-primary me-2">{{ content['header']['login_text'] }}</button>
-                <button type="button" class="btn btn-primary">{{ content['header']['signup_text'] }}</button>
-            </div>
+         
         </header>
 
         <div class="row featurette">
@@ -55,10 +52,12 @@
                 </div>
             </div>
 
+            <!-- Image with fixed height -->
             <div class="col-md-5">
-                <img src="{{ content['sections'][1]['feature_image_src'] }}"
-                    class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
-                    alt="QRealtor Hero Image" width="500" height="500">
+                <img src="static/QRealtor_hero.png" 
+                    class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid rounded w-100"
+                    style="height: 18rem; object-fit: cover;"
+                    alt="QRealtor Hero Image">
             </div>
         </div>
     </div>
@@ -81,10 +80,10 @@
         </div>
     </div>
 
-    <!-- Repeat for each feature -->
+    <!-- Repeat for each feature with spacing and fixed height images -->
     {% for feature in content['sections'][2:] %}
-    <div class="row featurette">
-        <div class="col-md-7 order-md-2 px-4 py-5 mt-5">
+    <div class="row featurette my-5">
+        <div class="col-md-7 order-md-2 px-4 py-5">
             <div class="row mb-4">
                 <div class="col-auto">
                     <p class="text-primary border border-primary rounded-pill d-inline-block px-3 py-1">
@@ -97,8 +96,11 @@
         </div>
 
         <div class="col-md-5 order-md-1 ps-5">
-            <img src="{{ feature['feature_image_src'] }}" class="featurette-image img-fluid mx-auto"
-                alt="{{ feature['feature_name'] }}" width="900" height="900">
+            <!-- Image with fixed height and spacing -->
+            <img src="{{ feature['feature_image_src'] }}"
+                class="featurette-image img-fluid rounded w-100 mb-4"
+                style="height: 18rem; object-fit: cover;"
+                alt="{{ feature['feature_name'] }}">
         </div>
     </div>
     {% endfor %}
@@ -108,5 +110,11 @@
         <p class="float-end"><a href="#">{{ content['footer']['back_to_top'] }}</a></p>
         <p>© 2017–2021 Company, Inc. · <a href="#">{{ content['footer']['privacy'] }}</a> · <a href="#">{{ content['footer']['terms'] }}</a></p>
     </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXlHjR6/Y+fQT2F6M5Q1ar5l6/p4YN+mO3pVvLSWs+Jd4gDXEY6+dM6M9zoL" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiMmgTVn6gysAnkxtxdPQ2pe6pbJAK6mC6owz58tcQf+pHTxJ1KS05Rga" crossorigin="anonymous"></script>
 </body>
 </html>
