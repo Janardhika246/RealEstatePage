@@ -1,8 +1,12 @@
 import os
+import json
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from werkzeug.utils import secure_filename
+from pexels_api import API
 import google.generativeai as genai  # Import the Gemini API SDK
-import json
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -15,6 +19,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Configure your Gemini API key
 genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
 
+# Pexels API Key
+PEXELS_API_KEY = os.getenv('PEXELS_API_KEY')  # Make sure to set this environment variable
+pexels_api = API(PEXELS_API_KEY)
+
 # Function to check if the file is allowed
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -24,7 +32,6 @@ def generate_dynamic_content(prompt):
     try:
         # Use the Gemini API to generate content
         model = genai.GenerativeModel('gemini-1.5-flash',
-                              # Set the `response_mime_type` to output JSON
                               generation_config={"response_mime_type": "application/json"})
         response = model.generate_content(prompt)
 
@@ -37,13 +44,36 @@ def generate_dynamic_content(prompt):
     except Exception as e:
         return f"Error: {str(e)}"
 
+# Function to fetch images from Pexels based on feature name
+def fetch_pexels_images(query):
+    try:
+        headers = {
+            'Authorization': PEXELS_API_KEY
+        }
+        params = {
+            'query': query,
+            'per_page': 1  # Number of results per page
+        }
+        response = requests.get('https://api.pexels.com/v1/search', headers=headers, params=params)
+        
+        # Check if the response was successful
+        if response.status_code == 200:
+            data = response.json()
+            photos = data.get('photos', [])
+            if photos:
+                return photos[0]['src']['original']  # Return the URL of the original image
+            else:
+                return None
+        else:
+            return None
+    except Exception as e:
+        return None
+
 # Load the content from a JSON file
 def load_content():
     with open('content.json', 'r') as f:
         content = json.load(f)
     return content
-
-
 
 @app.route('/content/<context>')
 def home(context):
@@ -57,13 +87,18 @@ def home(context):
     try:
         # Convert the string response to a JSON object
         new_content_json = json.loads(new_content)
+        
+        # Fetch Pexels images for each feature
+        for section in new_content_json.get('sections', []):
+            if 'feature_name' in section:
+                image_url = fetch_pexels_images(section['feature_name'])
+                if image_url:
+                    section['feature_image_src'] = image_url  # Replace the image URL with Pexels image
+
     except json.JSONDecodeError:
         return jsonify({"error": "Failed to parse generated content as JSON.", "response": new_content})
 
     return render_template('template.html', content=new_content_json)
-
-  
-
 
 @app.route('/')
 def index():
